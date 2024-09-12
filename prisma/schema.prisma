@@ -14,58 +14,108 @@ datasource db {
 }
 
 model Account {
-  id        String   @id @default(uuid())
-  userId    String   @unique @map("user_id")
-  name      String
-  image     String
-  createdAt DateTime @default(now()) @map("created_at")
+  id          String        @id @default(uuid())
+  userId      String        @unique @map("user_id")
+  name        String
+  image       String
+  createdAt   DateTime      @default(now()) @map("created_at")
+  accountGame AccountGame[]
 
   @@map("accounts")
 }
 
 model Game {
-  id          String   @id @default(uuid())
+  id          String        @id @default(uuid())
   name        String
   description String
-  releasedAt  DateTime @map("released_at")
+  releasedAt  DateTime      @map("released_at")
+  type        Type[]
+  platform    Platform[]
+  mediaType   MediaType[]
+  genre       Genre[]
+  accountGame AccountGame[]
+
+  @@map("games")
 }
 
 model Type {
-  id          String @id @default(uuid())
+  id          String  @id @default(uuid())
   description String
+  gameId      String? @map("game_id")
+  game        Game?   @relation(fields: [gameId], references: [id])
+
+  @@unique([description, gameId])
+  @@map("types")
 }
 
 model Platform {
-  id          String @id @default(uuid())
-  description String
+  id            String       @id @default(uuid())
+  description   String
+  gameId        String?      @map("game_id")
+  game          Game?        @relation(fields: [gameId], references: [id])
+  accountGameId String?      @map("account_game_id")
+  accountGame   AccountGame? @relation(fields: [accountGameId], references: [id])
+
+  @@unique([description, gameId])
+  @@map("platforms")
 }
 
 model MediaType {
-  id          String @id @default(uuid())
-  description String
+  id            String       @id @default(uuid())
+  description   String
+  gameId        String?      @map("game_id")
+  game          Game?        @relation(fields: [gameId], references: [id])
+  accountGameId String?      @map("account_game_id")
+  accountGame   AccountGame? @relation(fields: [accountGameId], references: [id])
+
+  @@unique([description, gameId])
+  @@map("media_types")
 }
 
 model Genre {
-  id          String @id @default(uuid())
+  id          String  @id @default(uuid())
   description String
+  gameId      String? @map("game_id")
+  game        Game?   @relation(fields: [gameId], references: [id])
+
+  @@unique([description, gameId])
+  @@map("genres")
 }
 
 model Report {
-  id          String    @id @default(uuid())
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime? @map("updated_at")
-  hoursPlayed Float?    @map("hours_played")
-  description String?
+  id            String      @id @default(uuid())
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime?   @map("updated_at")
+  hoursPlayed   Float?      @map("hours_played")
+  description   String?
+  accountGameId String      @map("account_game_id")
+  accountGame   AccountGame @relation(fields: [accountGameId], references: [id])
+
+  @@map("reports")
 }
 
 model Status {
-  id          String @id @default(uuid())
+  id          String        @id @default(uuid())
   description String
+  accountGame AccountGame[]
+
+  @@map("status")
 }
 
 model AccountGame {
-  id           String   @id @default(uuid())
-  acquiredDate DateTime @map("acquired_date")
-  startedAt    DateTime @map("started_at")
-  finishedAt   DateTime @map("finished_at")
+  id           String      @id @default(uuid())
+  acquiredDate DateTime    @map("acquired_date")
+  startedAt    DateTime    @map("started_at")
+  finishedAt   DateTime    @map("finished_at")
+  accountId    String      @map("account_id")
+  account      Account     @relation(fields: [accountId], references: [id])
+  report       Report[]
+  gameId       String      @map("game_id")
+  game         Game        @relation(fields: [gameId], references: [id])
+  statusId     String      @map("status_id")
+  status       Status      @relation(fields: [statusId], references: [id])
+  platform     Platform[]
+  mediaType    MediaType[]
+
+  @@map("accounts_games")
 }
