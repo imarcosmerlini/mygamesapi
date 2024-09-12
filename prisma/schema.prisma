@@ -12,3 +12,60 @@ datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
+
+model Account {
+  id        String   @id @default(uuid())
+  userId    String   @unique @map("user_id")
+  name      String
+  image     String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("accounts")
+}
+
+model Game {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  releasedAt  DateTime @map("released_at")
+}
+
+model Type {
+  id          String @id @default(uuid())
+  description String
+}
+
+model Platform {
+  id          String @id @default(uuid())
+  description String
+}
+
+model MediaType {
+  id          String @id @default(uuid())
+  description String
+}
+
+model Genre {
+  id          String @id @default(uuid())
+  description String
+}
+
+model Report {
+  id          String    @id @default(uuid())
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime? @map("updated_at")
+  hoursPlayed Float?    @map("hours_played")
+  description String?
+}
+
+model Status {
+  id          String @id @default(uuid())
+  description String
+}
+
+model AccountGame {
+  id           String   @id @default(uuid())
+  acquiredDate DateTime @map("acquired_date")
+  startedAt    DateTime @map("started_at")
+  finishedAt   DateTime @map("finished_at")
+}
